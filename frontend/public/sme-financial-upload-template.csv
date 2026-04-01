@@ -1,0 +1,17 @@
+metric,value
+revenue,500000
+cogs,220000
+operating_expenses,140000
+payroll_expense,85000
+interest_expense,18000
+tax_expense,24000
+depreciation,12000
+cash,60000
+receivables,70000
+current_assets,180000
+inventory,35000
+payables,42000
+current_liabilities,95000
+total_assets,420000
+total_liabilities,190000
+equity,230000

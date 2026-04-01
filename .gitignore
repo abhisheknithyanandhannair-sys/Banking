@@ -1,0 +1,27 @@
+# Python
+backend/__pycache__/
+**/__pycache__/
+backend/.venv/
+backend/*.pyc
+**/*.pyc
+
+# Node / Vite
+frontend/node_modules/
+frontend/dist/
+
+# Environment files
+.env
+.env.*
+frontend/.env
+frontend/.env.local
+frontend/.env.production
+frontend/.env.development
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+
+# Local reference documents
+FIN42130 Group Assignment 2025-26 (1).pdf
+Germany Credit Score Sample.pdf
+Irish Credit Score Sample.pdf
