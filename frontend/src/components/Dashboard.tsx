@@ -303,6 +303,8 @@ export default function Dashboard({
               <Input
                 id="price_margin_change_pct"
                 type="number"
+                min="-20"
+                max="20"
                 step="0.1"
                 value={scenario.price_margin_change_pct}
                 onChange={(event) =>
@@ -315,6 +317,8 @@ export default function Dashboard({
               <Input
                 id="payroll_change_pct"
                 type="number"
+                min="-30"
+                max="30"
                 step="0.1"
                 value={scenario.payroll_change_pct}
                 onChange={(event) =>
@@ -327,6 +331,8 @@ export default function Dashboard({
               <Input
                 id="interest_rate_shock_bps"
                 type="number"
+                min="-500"
+                max="500"
                 step="1"
                 value={scenario.interest_rate_shock_bps}
                 onChange={(event) =>
@@ -339,6 +345,8 @@ export default function Dashboard({
               <Input
                 id="dso_change_days"
                 type="number"
+                min="-60"
+                max="60"
                 step="1"
                 value={scenario.dso_change_days}
                 onChange={(event) => setScenario((current) => ({ ...current, dso_change_days: Number(event.target.value) || 0 }))}
@@ -349,6 +357,8 @@ export default function Dashboard({
               <Input
                 id="inventory_change_days"
                 type="number"
+                min="-60"
+                max="60"
                 step="1"
                 value={scenario.inventory_change_days}
                 onChange={(event) =>
@@ -361,6 +371,8 @@ export default function Dashboard({
               <Input
                 id="debt_term_change_months"
                 type="number"
+                min="-24"
+                max="60"
                 step="1"
                 value={scenario.debt_term_change_months}
                 onChange={(event) =>
@@ -404,6 +416,11 @@ export default function Dashboard({
               Reset scenario
             </Button>
           </div>
+
+          <p className="text-xs leading-6 text-muted-foreground">
+            Allowed ranges: margin `-20` to `20`, payroll `-30` to `30`, DSO/inventory `-60` to `60` days, debt term
+            `-24` to `60` months, and interest shock `-500` to `500` bps.
+          </p>
 
           <div className="rounded-2xl border bg-accent/40 p-4">
             <div className="mb-2 flex items-center gap-2">

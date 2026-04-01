@@ -1,3 +1,4 @@
+import axios from "axios";
 import { Moon, Sun } from "lucide-react";
 import { useState } from "react";
 import { useTheme } from "next-themes";
@@ -15,6 +16,16 @@ export default function App() {
   const [error, setError] = useState<string>("");
   const { theme, setTheme } = useTheme();
 
+  const extractErrorMessage = (fallback: string) => (error: unknown) => {
+    if (axios.isAxiosError(error)) {
+      const detail = error.response?.data?.detail;
+      if (Array.isArray(detail) && detail.length > 0) {
+        return `Validation issue: ${detail[0]?.msg ?? fallback}`;
+      }
+    }
+    return fallback;
+  };
+
   const handleAnalyze = async (data: AnalysisInput) => {
     const baselineInput = {
       ...data,
@@ -27,8 +38,8 @@ export default function App() {
       const response = await analyzeFinancialData(baselineInput);
       setLatestInput(baselineInput);
       setResult(response);
-    } catch {
-      setError("Unable to analyze the application right now. Please make sure the backend is running.");
+    } catch (error) {
+      setError(extractErrorMessage("Unable to analyze the application right now. Please make sure the backend is running.")(error));
     } finally {
       setIsLoading(false);
     }
@@ -47,8 +58,12 @@ export default function App() {
         scenario,
       });
       setResult(response);
-    } catch {
-      setError("Unable to run the what-if scenario right now. Please check that the backend is available.");
+    } catch (error) {
+      setError(
+        extractErrorMessage(
+          "Unable to run the what-if scenario right now. Keep the simulator values within the allowed ranges."
+        )(error)
+      );
     } finally {
       setIsSimulating(false);
     }
