@@ -110,6 +110,7 @@ Render service settings already defined:
 - Build command: `pip install -r requirements.txt`
 - Start command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
 - Health check: `/health`
+- Python version pinned to `3.13.12` to avoid unsupported-wheel issues on `pydantic-core`
 
 After deployment, copy the public Render URL, for example:
 
