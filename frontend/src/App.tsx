@@ -1,7 +1,8 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import StartupPage from "./pages/StartupPage";
-import DashboardPage from "./pages/DashboardPage";
+import RegistrationPage from "./pages/RegistrationPage";
+import ResultsPage from "./pages/ResultsPage";
 
 export default function App() {
   return (
@@ -9,7 +10,9 @@ export default function App() {
       <AnimatePresence mode="wait">
         <Routes>
           <Route path="/" element={<StartupPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/register" element={<RegistrationPage />} />
+          <Route path="/results" element={<ResultsPage />} />
+          <Route path="/dashboard" element={<Navigate to="/register" replace />} />
         </Routes>
       </AnimatePresence>
     </BrowserRouter>

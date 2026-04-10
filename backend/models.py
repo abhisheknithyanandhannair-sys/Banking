@@ -1,6 +1,6 @@
 from typing import Dict, List, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 CountryCode = Literal["ireland", "spain", "france", "netherlands", "germany"]
@@ -8,6 +8,7 @@ SchemeChannel = Literal["bank", "guarantee", "microfinance", "public_scheme"]
 ReadinessBand = Literal["Green", "Amber", "Red"]
 Severity = Literal["high", "medium", "low"]
 CapexTiming = Literal["neutral", "defer", "bring_forward"]
+TrendDirection = Literal["up", "flat", "down", "mixed"]
 
 
 def zero_series() -> List[float]:
@@ -34,6 +35,12 @@ class BalanceSheet(BaseModel):
     total_assets: float = Field(..., ge=0)
     total_liabilities: float = Field(..., ge=0)
     equity: float = Field(..., ge=0)
+
+
+class HistoricalFinancialYear(BaseModel):
+    year_label: str = Field(..., min_length=1, max_length=20)
+    pl: ProfitAndLoss
+    bs: BalanceSheet
 
 
 class FacilityRequest(BaseModel):
@@ -117,11 +124,38 @@ class AnalysisRequest(BaseModel):
     country: CountryCode = "ireland"
     pl: ProfitAndLoss
     bs: BalanceSheet
+    historical_financials: List[HistoricalFinancialYear] = Field(..., min_length=3, max_length=3)
     facility: FacilityRequest = Field(default_factory=FacilityRequest)
     bank: BankData = Field(default_factory=BankData)
     documentation: DocumentationInput = Field(default_factory=DocumentationInput)
     country_context: CountryContext = Field(default_factory=CountryContext)
     scenario: WhatIfScenario = Field(default_factory=WhatIfScenario)
+    employee_count: int = Field(10, ge=0, le=10000)
+    business_age_years: int = Field(5, ge=0, le=200)
+    sector: str = Field("professional_services", min_length=1, max_length=50)
+    consecutive_loss_months: int = Field(0, ge=0, le=24)
+    repayment_history_score: int = Field(3, ge=1, le=5)
+    fiben_score: int = Field(5, ge=1, le=8)
+    schufa_score: int = Field(650, ge=100, le=999)
+    hausbank_years: float = Field(3.0, ge=0)
+    sbci_eligible: bool = False
+    late_payment_flag: bool = False
+    cir_eligible: bool = False
+
+    @field_validator("historical_financials")
+    @classmethod
+    def validate_historical_years(cls, value: List[HistoricalFinancialYear]) -> List[HistoricalFinancialYear]:
+        labels = [item.year_label.strip() for item in value]
+        if len(set(labels)) != len(labels):
+            raise ValueError("Historical financial year labels must be unique.")
+        return value
+
+    @model_validator(mode="after")
+    def sync_latest_financials(self) -> "AnalysisRequest":
+        latest_year = self.historical_financials[-1]
+        object.__setattr__(self, "pl", latest_year.pl)
+        object.__setattr__(self, "bs", latest_year.bs)
+        return self
 
 
 class ReadinessResult(BaseModel):
@@ -198,6 +232,44 @@ class WhatIfResult(BaseModel):
     metrics: List[MetricComparison]
 
 
+class PeerMetric(BaseModel):
+    key: str
+    label: str
+    your_value: float
+    your_value_formatted: str
+    peer_average: float
+    peer_average_formatted: str
+    rating: Literal["above_average", "average", "below_average"]
+    gap_pct: float
+
+
+class PeerBenchmark(BaseModel):
+    country: str
+    sector: str
+    overall_peer_rating: Literal["above_average", "average", "below_average"]
+    above_average_count: int
+    average_count: int
+    below_average_count: int
+    metrics: List[PeerMetric]
+
+
+class HistoricalAnalysis(BaseModel):
+    summary: str
+    bullets: List[str]
+    revenue_direction: TrendDirection
+    margin_direction: TrendDirection
+    leverage_direction: TrendDirection
+    liquidity_direction: TrendDirection
+
+
+class CommercialOpportunity(BaseModel):
+    potential_amount_eur: float = Field(..., ge=0)
+    indicative_rate_from_pct: float = Field(..., ge=0)
+    headline: str
+    supporting_copy: str
+    disclaimer: str
+
+
 class AnalysisResponse(BaseModel):
     country: CountryCode
     readiness: ReadinessResult
@@ -211,3 +283,26 @@ class AnalysisResponse(BaseModel):
     scheme_pathways: List[SchemePathway]
     local_artifacts: List[LocalArtifact]
     what_if: WhatIfResult
+    peer_benchmark: PeerBenchmark
+    historical_analysis: HistoricalAnalysis
+    commercial_opportunity: CommercialOpportunity
+
+
+class AgentRequest(BaseModel):
+    company_name: str = Field(..., min_length=1, max_length=160)
+    registration_number: str = Field("", max_length=80)
+    contact_name: str = Field(..., min_length=1, max_length=160)
+    contact_email: str = Field(..., min_length=3, max_length=160)
+    contact_phone: str = Field("", max_length=80)
+    country: CountryCode
+    readiness_band: ReadinessBand
+    readiness_score: int = Field(..., ge=0, le=100)
+    potential_amount_eur: float = Field(..., ge=0)
+    indicative_rate_from_pct: float = Field(..., ge=0)
+    notes: str = Field("", max_length=1000)
+
+
+class AgentRequestReceipt(BaseModel):
+    request_id: str
+    status: Literal["received"]
+    message: str

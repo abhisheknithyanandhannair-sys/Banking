@@ -2,6 +2,7 @@ export type CountryCode = "ireland" | "spain" | "france" | "netherlands" | "germ
 export type SchemeChannel = "bank" | "guarantee" | "microfinance" | "public_scheme";
 export type ReadinessBand = "Green" | "Amber" | "Red";
 export type CapexTiming = "neutral" | "defer" | "bring_forward";
+export type TrendDirection = "up" | "flat" | "down" | "mixed";
 
 export interface ProfitAndLoss {
   revenue: number;
@@ -23,6 +24,12 @@ export interface BalanceSheet {
   total_assets: number;
   total_liabilities: number;
   equity: number;
+}
+
+export interface HistoricalFinancialYear {
+  year_label: string;
+  pl: ProfitAndLoss;
+  bs: BalanceSheet;
 }
 
 export interface FacilityRequest {
@@ -106,11 +113,38 @@ export interface AnalysisInput {
   country: CountryCode;
   pl: ProfitAndLoss;
   bs: BalanceSheet;
+  historical_financials: HistoricalFinancialYear[];
   facility: FacilityRequest;
   bank: BankData;
   documentation: DocumentationInput;
   country_context: CountryContext;
   scenario: WhatIfScenario;
+  employee_count: number;
+  business_age_years: number;
+  sector: string;
+  consecutive_loss_months: number;
+  repayment_history_score: number;
+  fiben_score: number;
+  schufa_score: number;
+  hausbank_years: number;
+  sbci_eligible: boolean;
+  late_payment_flag: boolean;
+  cir_eligible: boolean;
+}
+
+export interface RegistrationProfile {
+  companyName: string;
+  registrationNumber: string;
+  contactName: string;
+  contactEmail: string;
+  contactPhone: string;
+  industry: string;
+  subIndustry: string;
+}
+
+export interface ApplicationSubmission {
+  registration: RegistrationProfile;
+  analysisInput: AnalysisInput;
 }
 
 export interface ReadinessResult {
@@ -187,6 +221,44 @@ export interface WhatIfResult {
   metrics: MetricComparison[];
 }
 
+export interface PeerMetric {
+  key: string;
+  label: string;
+  your_value: number;
+  your_value_formatted: string;
+  peer_average: number;
+  peer_average_formatted: string;
+  rating: "above_average" | "average" | "below_average";
+  gap_pct: number;
+}
+
+export interface PeerBenchmark {
+  country: string;
+  sector: string;
+  overall_peer_rating: "above_average" | "average" | "below_average";
+  above_average_count: number;
+  average_count: number;
+  below_average_count: number;
+  metrics: PeerMetric[];
+}
+
+export interface HistoricalAnalysis {
+  summary: string;
+  bullets: string[];
+  revenue_direction: TrendDirection;
+  margin_direction: TrendDirection;
+  leverage_direction: TrendDirection;
+  liquidity_direction: TrendDirection;
+}
+
+export interface CommercialOpportunity {
+  potential_amount_eur: number;
+  indicative_rate_from_pct: number;
+  headline: string;
+  supporting_copy: string;
+  disclaimer: string;
+}
+
 export interface AnalysisResult {
   country: CountryCode;
   readiness: ReadinessResult;
@@ -200,6 +272,47 @@ export interface AnalysisResult {
   scheme_pathways: SchemePathway[];
   local_artifacts: LocalArtifact[];
   what_if: WhatIfResult;
+  peer_benchmark: PeerBenchmark;
+  historical_analysis: HistoricalAnalysis;
+  commercial_opportunity: CommercialOpportunity;
+}
+
+export interface AgentRequestPayload {
+  company_name: string;
+  registration_number: string;
+  contact_name: string;
+  contact_email: string;
+  contact_phone: string;
+  country: CountryCode;
+  readiness_band: ReadinessBand;
+  readiness_score: number;
+  potential_amount_eur: number;
+  indicative_rate_from_pct: number;
+  notes: string;
+}
+
+export interface AgentRequestReceipt {
+  request_id: string;
+  status: "received";
+  message: string;
+}
+
+export interface CountryIndustryOption {
+  value: string;
+  label: string;
+  sector: string;
+  subIndustries: Array<{
+    value: string;
+    label: string;
+  }>;
+}
+
+export interface ApplicationSnapshot {
+  version?: number;
+  registration: RegistrationProfile;
+  latestInput: AnalysisInput;
+  result: AnalysisResult;
+  updatedAt: string;
 }
 
 export const emptyScenario: WhatIfScenario = {

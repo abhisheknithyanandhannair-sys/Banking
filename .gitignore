@@ -20,6 +20,14 @@ frontend/.env.development
 # OS / editor files
 .DS_Store
 Thumbs.db
+.claude/
+frontend-updated-src/
+local-run-logs/
+backend/backend/
+Logo.png
+france_sme.csv
+germany_sme.csv
+ireland_sme.csv
 
 # Local reference documents
 FIN42130 Group Assignment 2025-26 (1).pdf

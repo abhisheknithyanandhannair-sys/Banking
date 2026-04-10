@@ -47,13 +47,16 @@ def _ireland_adapter(data: AnalysisRequest) -> CountryAdapterResult:
             ),
         ],
         document_pack=[
-            ChecklistItem(item="CCR report or lender CCR pull confirmation", reason="Shows factual Irish credit events where relevant to the application."),
+            ChecklistItem(
+                item="CCR report or lender CCR pull confirmation",
+                reason="Shows factual Irish credit events where relevant to the application.",
+            ),
             ChecklistItem(item="CRO company extract", reason="Supports legal identity and filing status checks."),
         ],
         local_artifacts=[
             LocalArtifact(
                 artifact="CCR report",
-                what_it_means="A factual Central Credit Register view of credit facilities and events, typically relevant once exposure reaches the €2,000 reporting threshold.",
+                what_it_means="A factual Central Credit Register view of credit facilities and events, typically relevant once exposure reaches the EUR 2,000 reporting threshold.",
                 what_it_does_not_mean="It does not produce a lender score or automatic credit decision on its own.",
             )
         ],
@@ -115,14 +118,17 @@ def _spain_adapter(data: AnalysisRequest, ratios: dict[str, float]) -> CountryAd
             )
         ],
         document_pack=[
-            ChecklistItem(item="CIRBE report", reason="Lets the lender reconcile factual exposure once the >€1,000 reporting threshold is crossed."),
+            ChecklistItem(
+                item="CIRBE report",
+                reason="Lets the lender reconcile factual exposure once the >EUR 1,000 reporting threshold is crossed.",
+            ),
             ChecklistItem(item="Collateral schedule", reason="Supports collateral parsing and security coverage review."),
             ChecklistItem(item="Debt maturity ladder", reason="Shows refinancing pressure and tenor concentration clearly."),
         ],
         local_artifacts=[
             LocalArtifact(
                 artifact="CIRBE report",
-                what_it_means="A factual Bank of Spain exposure view that becomes relevant once reportable exposure exceeds €1,000.",
+                what_it_means="A factual Bank of Spain exposure view that becomes relevant once reportable exposure exceeds EUR 1,000.",
                 what_it_does_not_mean="It does not assign a score by itself; lenders still interpret the exposure profile and repayment story.",
             )
         ],
@@ -168,11 +174,11 @@ def _france_adapter(data: AnalysisRequest) -> CountryAdapterResult:
     context = data.country_context.france
     turnover = data.pl.revenue
     if turnover < 2_000_000:
-        regime = "sub-€2m turnover path"
+        regime = "sub-EUR 2m turnover path"
     elif turnover < 10_000_000:
-        regime = "€2m-€10m turnover path"
+        regime = "EUR 2m-EUR 10m turnover path"
     else:
-        regime = "€10m+ turnover path"
+        regime = "EUR 10m+ turnover path"
 
     rating = ""
     if context.bdf_turnover_letter or context.bdf_credit_score_digit:
@@ -188,7 +194,10 @@ def _france_adapter(data: AnalysisRequest) -> CountryAdapterResult:
             )
         ],
         document_pack=[
-            ChecklistItem(item="Banque de France correspondence or rating reference", reason="Helps frame existing French central-bank dialogue where available."),
+            ChecklistItem(
+                item="Banque de France correspondence or rating reference",
+                reason="Helps frame existing French central-bank dialogue where available.",
+            ),
             ChecklistItem(item=f"Turnover evidence for the {regime}", reason="Shows which turnover band the business is presenting under."),
             ChecklistItem(item="Guarantee support note", reason="Useful when asking the lender to consider a Bpifrance-backed mitigant."),
         ],
@@ -251,7 +260,11 @@ def _netherlands_adapter(data: AnalysisRequest) -> CountryAdapterResult:
         ],
         document_pack=[
             ChecklistItem(item="KVK extract", reason="Supports Dutch legal-form and registration checks."),
-            ChecklistItem(item="BKR overview", reason="Relevant when the legal form brings personal liability into the credit view.", required=bkr_relevant),
+            ChecklistItem(
+                item="BKR overview",
+                reason="Relevant when the legal form brings personal liability into the credit view.",
+                required=bkr_relevant,
+            ),
             ChecklistItem(item="RVO/BMKB or GO support note", reason="Explains why a guarantee pathway is being used."),
         ],
         local_artifacts=[
@@ -307,7 +320,10 @@ def _germany_adapter(data: AnalysisRequest, cashflow: dict[str, float | list]) -
         ],
         document_pack=[
             ChecklistItem(item="Company Register extract", reason="Shows the legal entity details and current filing visibility."),
-            ChecklistItem(item="Latest filed annual accounts", reason="German lenders will expect accounts visibility through the register or direct pack."),
+            ChecklistItem(
+                item="Latest filed annual accounts",
+                reason="German lenders will expect accounts visibility through the register or direct pack.",
+            ),
             ChecklistItem(item="Hausbank memo and use-of-funds note", reason="Supports KfW or guarantee-bank routing."),
         ],
         local_artifacts=[
